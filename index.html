@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equity Value Intelligence: S&P 500 Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Equity Value Intelligence: S&P 500 Tracker</h1>
+                <div class="header-meta">
+                    <span id="current-date"></span>
+                    <span class="separator">|</span>
+                    <span id="last-updated">Last Updated: <span id="update-time"></span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Grid -->
+        <main class="dashboard-main">
+            <!-- Overview Panel -->
+            <section class="overview-panel">
+                <h2>Market Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-cards">
+                        <div class="metric-card value-card">
+                            <div class="card-icon">📊</div>
+                            <div class="card-content">
+                                <h3 id="value-count">0</h3>
+                                <p>Value Stocks</p>
+                            </div>
+                        </div>
+                        <div class="metric-card growth-card">
+                            <div class="card-icon">📈</div>
+                            <div class="card-content">
+                                <h3 id="growth-count">0</h3>
+                                <p>Growth Stocks</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sector-chart-container">
+                        <h3>Sector Distribution</h3>
+                        <canvas id="sectorChart"></canvas>
+                    </div>
+                    <div class="avg-metrics">
+                        <h3>Average Metrics</h3>
+                        <table class="metrics-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>P/E</th>
+                                    <th>P/B</th>
+                                    <th>EV/EBIT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="avg-metrics-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Value Assessment Table -->
+            <section class="value-assessment">
+                <h2>Value Assessment Table</h2>
+                <div class="table-container">
+                    <table class="assessment-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="Company">Company</th>
+                                <th class="sortable" data-column="Sector">Sector</th>
+                                <th class="sortable" data-column="PE_Ratio">P/E</th>
+                                <th class="sortable" data-column="PB_Ratio">P/B</th>
+                                <th class="sortable" data-column="EV_EBIT">EV/EBIT</th>
+                                <th class="sortable" data-column="DCF_Value_Gap">DCF Gap (%)</th>
+                                <th class="sortable" data-column="FCF_Yield">FCF Yield</th>
+                                <th class="sortable" data-column="ROIC">ROIC</th>
+                                <th class="sortable" data-column="Fair_Value">Fair Value</th>
+                                <th>Valuation Tag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="value-stocks-body">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Interactive Comparison Module -->
+            <section class="comparison-module">
+                <h2>Interactive Comparison</h2>
+                <div class="comparison-controls">
+                    <select id="company-selector" multiple>
+                        <option value="">Select companies to compare (2-5)</option>
+                    </select>
+                    <button class="btn btn--secondary" id="clear-comparison">Clear Selection</button>
+                </div>
+                <div class="comparison-tabs">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="valuation">Valuation</button>
+                        <button class="tab-btn" data-tab="profitability">Profitability</button>
+                        <button class="tab-btn" data-tab="safety">Safety</button>
+                        <button class="tab-btn" data-tab="growth">Growth</button>
+                        <button class="tab-btn" data-tab="dividend">Dividend</button>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-panel active" id="valuation-tab">
+                            <canvas id="valuationChart"></canvas>
+                        </div>
+                        <div class="tab-panel" id="profitability-tab">
+                            <canvas id="profitabilityChart"></canvas>
+                        </div>
+                        <div class="tab-panel" id="safety-tab">
+                            <canvas id="safetyChart"></canvas>
+                        </div>
+                        <div class="tab-panel" id="growth-tab">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                        <div class="tab-panel" id="dividend-tab">
+                            <canvas id="dividendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Historical Valuation Trend -->
+            <section class="historical-trend">
+                <h2>Historical Valuation Trend</h2>
+                <div class="trend-controls">
+                    <select id="trend-company-selector">
+                        <option value="">Select company</option>
+                    </select>
+                    <div class="estimate-toggles">
+                        <button class="estimate-btn active" data-period="TTM">TTM</button>
+                        <button class="estimate-btn" data-period="FY1">FY1</button>
+                        <button class="estimate-btn" data-period="FY2">FY2</button>
+                    </div>
+                </div>
+                <div class="trend-chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Filters & Controls Sidebar -->
+            <aside class="filters-sidebar">
+                <h2>Filters & Controls</h2>
+                
+                <div class="filter-group">
+                    <h3>Sector</h3>
+                    <select id="sector-filter" multiple>
+                        <option value="">All Sectors</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Valuation Status</h3>
+                    <select id="valuation-filter" multiple>
+                        <option value="">All Valuations</option>
+                        <option value="VALUE - Undervalued">Undervalued</option>
+                        <option value="VALUE - Fairly Valued">Fairly Valued</option>
+                        <option value="VALUE - Overvalued">Overvalued</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <h3>Dividend Yield > <span id="dividend-threshold">0</span>%</h3>
+                    <input type="range" id="dividend-slider" min="0" max="10" step="0.1" value="0">
+                </div>
+
+                <div class="filter-group">
+                    <h3>Market Cap (B)</h3>
+                    <div class="range-inputs">
+                        <input type="number" id="market-cap-min" placeholder="Min" step="1">
+                        <input type="number" id="market-cap-max" placeholder="Max" step="1">
+                    </div>
+                </div>
+
+                <button class="btn btn--outline" id="clear-filters">Clear All Filters</button>
+            </aside>
+
+            <!-- Advanced Features -->
+            <section class="advanced-features">
+                <h2>Advanced Features</h2>
+                
+                <div class="features-grid">
+                    <!-- Export Options -->
+                    <div class="feature-card">
+                        <h3>Export Data</h3>
+                        <div class="export-buttons">
+                            <button class="btn btn--sm btn--secondary" id="export-excel">Excel</button>
+                            <button class="btn btn--sm btn--secondary" id="export-csv">CSV</button>
+                            <button class="btn btn--sm btn--secondary" id="export-pdf">PDF</button>
+                        </div>
+                    </div>
+
+                    <!-- Alert System -->
+                    <div class="feature-card">
+                        <h3>Alert System</h3>
+                        <div class="alert-setup">
+                            <div class="alert-input">
+                                <label>P/E Threshold:</label>
+                                <input type="number" id="pe-threshold" placeholder="15" step="0.1">
+                                <button class="btn btn--sm btn--primary" id="save-pe-alert">Save</button>
+                            </div>
+                            <div class="alert-input">
+                                <label>DCF Gap Threshold (%):</label>
+                                <input type="number" id="dcf-threshold" placeholder="20" step="1">
+                                <button class="btn btn--sm btn--primary" id="save-dcf-alert">Save</button>
+                            </div>
+                        </div>
+                        <div class="alert-notifications" id="alert-notifications">
+                            <p>No active alerts</p>
+                        </div>
+                    </div>
+
+                    <!-- Top 10 Undervalued -->
+                    <div class="feature-card top-undervalued">
+                        <h3>Top 10 Undervalued Value Stocks</h3>
+                        <div class="leaderboard" id="top-undervalued-list">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

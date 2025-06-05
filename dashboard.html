@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equity Value Intelligence: S&P 500 Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.0/index.min.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>📊 Equity Value Intelligence: S&P 500 Tracker</h1>
+                <div class="header-meta">
+                    <span id="current-date"></span>
+                    <span class="separator">|</span>
+                    <span>Last Updated: <span id="update-time"></span></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <div class="dashboard-layout">
+            <!-- Overview Panel -->
+            <section class="overview-panel">
+                <h2>📈 Market Overview</h2>
+                <div class="overview-content">
+                    <div class="metric-cards">
+                        <div class="metric-card value-card">
+                            <div class="card-icon">💰</div>
+                            <div class="card-content">
+                                <h3 id="value-count">0</h3>
+                                <p>Value Stocks</p>
+                                <span class="metric-subtitle">Undervalued Opportunities</span>
+                            </div>
+                        </div>
+                        <div class="metric-card growth-card">
+                            <div class="card-icon">🚀</div>
+                            <div class="card-content">
+                                <h3 id="growth-count">0</h3>
+                                <p>Growth Stocks</p>
+                                <span class="metric-subtitle">High Growth Potential</span>
+                            </div>
+                        </div>
+                        <div class="metric-card blend-card">
+                            <div class="card-icon">⚖️</div>
+                            <div class="card-content">
+                                <h3 id="blend-count">0</h3>
+                                <p>Blend Stocks</p>
+                                <span class="metric-subtitle">Mixed Characteristics</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-row">
+                        <div class="chart-container">
+                            <h3>Sector Distribution</h3>
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+
+                        <div class="summary-table">
+                            <h3>Value vs Growth Averages</h3>
+                            <table id="summaryTable">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Avg P/E</th>
+                                        <th>Avg P/B</th>
+                                        <th>Avg EV/EBIT</th>
+                                        <th>Avg FCF Yield</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summaryTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Content Grid -->
+            <div class="main-content-grid">
+                <!-- Value Assessment Table -->
+                <section class="value-assessment">
+                    <h2>💎 Value Assessment Table</h2>
+                    <div class="table-controls">
+                        <input type="text" id="searchInput" placeholder="Search companies..." class="search-input">
+                        <select id="sortSelect" class="sort-select">
+                            <option value="DCF_Value_Gap">Sort by DCF Gap</option>
+                            <option value="PE_Ratio">Sort by P/E</option>
+                            <option value="PB_Ratio">Sort by P/B</option>
+                            <option value="FCF_Yield">Sort by FCF Yield</option>
+                        </select>
+                    </div>
+                    <div class="table-container">
+                        <table id="valueTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th data-sort="Company">Company</th>
+                                    <th data-sort="Sector">Sector</th>
+                                    <th data-sort="PE_Ratio">P/E</th>
+                                    <th data-sort="PB_Ratio">P/B</th>
+                                    <th data-sort="EV_EBIT">EV/EBIT</th>
+                                    <th data-sort="DCF_Value_Gap">DCF Gap (%)</th>
+                                    <th data-sort="FCF_Yield">FCF Yield</th>
+                                    <th data-sort="ROIC">ROIC</th>
+                                    <th data-sort="Fair_Value">Fair Value</th>
+                                    <th data-sort="Valuation_Tag">Tag</th>
+                                </tr>
+                            </thead>
+                            <tbody id="valueTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Interactive Comparison Module -->
+                <section class="comparison-module">
+                    <h2>📊 Interactive Comparison</h2>
+                    <div class="comparison-controls">
+                        <select id="companySelect" multiple class="company-select">
+                            <option value="">Select companies to compare...</option>
+                        </select>
+                        <button id="clearComparison" class="btn btn-secondary">Clear Selection</button>
+                    </div>
+
+                    <div class="comparison-tabs">
+                        <button class="tab-btn active" data-tab="valuation">Valuation</button>
+                        <button class="tab-btn" data-tab="profitability">Profitability</button>
+                        <button class="tab-btn" data-tab="safety">Safety</button>
+                        <button class="tab-btn" data-tab="growth">Growth</button>
+                        <button class="tab-btn" data-tab="dividend">Dividend</button>
+                    </div>
+
+                    <div class="comparison-chart-container">
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Historical Trend Analysis -->
+                <section class="historical-trends">
+                    <h2>📈 Historical Valuation Trends</h2>
+                    <div class="trend-controls">
+                        <select id="trendCompanySelect" class="company-select-single">
+                            <option value="">Select a company...</option>
+                        </select>
+                        <div class="time-period-toggles">
+                            <button class="period-btn active" data-period="TTM">TTM</button>
+                            <button class="period-btn" data-period="FY1">FY1</button>
+                            <button class="period-btn" data-period="FY2">FY2</button>
+                        </div>
+                    </div>
+                    <div class="trend-chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </section>
+
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar">
+                    <h2>🔍 Filters & Controls</h2>
+
+                    <div class="filter-group">
+                        <h3>Sector</h3>
+                        <div id="sectorFilters" class="checkbox-group">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Valuation Status</h3>
+                        <div id="valuationFilters" class="checkbox-group">
+                            <label><input type="checkbox" value="VALUE - Undervalued" checked> Undervalued</label>
+                            <label><input type="checkbox" value="VALUE - Overvalued" checked> Overvalued</label>
+                            <label><input type="checkbox" value="VALUE - Fairly Valued" checked> Fairly Valued</label>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Dividend Yield</h3>
+                        <div class="slider-container">
+                            <input type="range" id="dividendSlider" min="0" max="10" step="0.1" value="0" class="slider">
+                            <div class="slider-labels">
+                                <span>0%</span>
+                                <span id="dividendValue">0%</span>
+                                <span>10%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <h3>Market Cap (B)</h3>
+                        <div class="range-inputs">
+                            <input type="number" id="minMarketCap" placeholder="Min" class="range-input">
+                            <input type="number" id="maxMarketCap" placeholder="Max" class="range-input">
+                        </div>
+                    </div>
+
+                    <button id="clearFilters" class="btn btn-secondary">Clear All Filters</button>
+                </aside>
+            </div>
+
+            <!-- Bottom Features Section -->
+            <section class="bottom-features">
+                <div class="features-grid">
+                    <!-- Export Functions -->
+                    <div class="feature-panel export-panel">
+                        <h3>📥 Export Data</h3>
+                        <div class="export-buttons">
+                            <button id="exportExcel" class="btn btn-primary">📊 Export Excel</button>
+                            <button id="exportCSV" class="btn btn-primary">📄 Export CSV</button>
+                            <button id="exportPDF" class="btn btn-primary">📋 Export PDF</button>
+                        </div>
+                    </div>
+
+                    <!-- Alert System -->
+                    <div class="feature-panel alert-panel">
+                        <h3>🚨 Alert System</h3>
+                        <div class="alert-controls">
+                            <div class="alert-input-group">
+                                <label>P/E Threshold:</label>
+                                <input type="number" id="peThreshold" value="15" min="5" max="50" step="0.1">
+                                <button id="savePEAlert" class="btn btn-small">Save</button>
+                            </div>
+                            <div class="alert-input-group">
+                                <label>DCF Gap Threshold (%):</label>
+                                <input type="number" id="dcfThreshold" value="20" min="5" max="100" step="1">
+                                <button id="saveDCFAlert" class="btn btn-small">Save</button>
+                            </div>
+                        </div>
+                        <div id="alertNotifications" class="alert-notifications">
+                            <p>No active alerts</p>
+                        </div>
+                    </div>
+
+                    <!-- Top 10 Undervalued -->
+                    <div class="feature-panel leaderboard-panel">
+                        <h3>🏆 Top 10 Undervalued Value Stocks</h3>
+                        <div class="leaderboard-container">
+                            <ol id="undervaluedLeaderboard" class="leaderboard-list">
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Performance Summary -->
+                    <div class="feature-panel performance-panel">
+                        <h3>📊 Performance Summary</h3>
+                        <div class="performance-cards">
+                            <div class="perf-card">
+                                <span class="perf-label">Avg Value P/E</span>
+                                <span class="perf-value" id="avgValuePE">-</span>
+                            </div>
+                            <div class="perf-card">
+                                <span class="perf-label">Avg Growth P/E</span>
+                                <span class="perf-value" id="avgGrowthPE">-</span>
+                            </div>
+                            <div class="perf-card">
+                                <span class="perf-label">Best DCF Gap</span>
+                                <span class="perf-value" id="bestDCFGap">-</span>
+                            </div>
+                            <div class="perf-card">
+                                <span class="perf-label">Highest FCF Yield</span>
+                                <span class="perf-value" id="highestFCF">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
