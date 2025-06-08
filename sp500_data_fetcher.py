@@ -20,7 +20,7 @@ import pandas as pd
 import json
 
 # Step 1: Get a sample list of S&P 500 companies (replace or expand as needed)
-symbols = ["AAPL", "MSFT", "JPM", "GOOGL", "META", "AMZN", "XOM", "NVDA", "TSLA", "V"]
+symbols = ["AAPL", "MSFT", "JPM", "GOOGL", "META", "AMZN", "XOM", "NVDA", "TSLA", "V", "AMD", "APD"]
 
 output = []
 
