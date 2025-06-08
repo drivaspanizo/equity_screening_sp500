@@ -57,7 +57,7 @@ const sp500Data = {
       "pb_ratio": 1.8,
       "ev_ebit": 8.2,
       "dcf_gap": 15.7,
-      "fcf_yield": 80.1,
+      "fcf_yield": 8.1,
       "roic": 15.2,
       "roe": 14.8,
       "operating_margin": 35.2,
