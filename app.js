@@ -6,7 +6,7 @@ const sp500Data = {
       "company_name": "Apple Inc.",
       "sector": "Technology",
       "market_cap": 3363000000000,
-      "price": 175.43,
+      "price": 1175.43,
       "pe_ratio": 28.5,
       "pb_ratio": 45.2,
       "ev_ebit": 22.1,
